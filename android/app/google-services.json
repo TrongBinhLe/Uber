@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "233591750828",
+    "firebase_url": "https://uber-now-e8f0c-default-rtdb.firebaseio.com",
+    "project_id": "uber-now-e8f0c",
+    "storage_bucket": "uber-now-e8f0c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233591750828:android:6244909e9557a08ac75f09",
+        "android_client_info": {
+          "package_name": "com.trongbinhle.uber_now"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233591750828-9kktdocdbdb7ppm2bdmmvgqb5k8cfido.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXXXz9v0KdiLYFJorygMpVW0y_HhbNgtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233591750828-9kktdocdbdb7ppm2bdmmvgqb5k8cfido.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:uber_now/brand_colors.dart';
@@ -8,10 +9,6 @@ import 'dart:io';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/mainpage';
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -19,13 +16,27 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   double searchSheetHeight = (Platform.isIOS) ? 270 : 250;
-
   double mapBottomPadding = 0;
 
-  Completer<GoogleMapController> _controller = Completer();
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
 
+  Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
   GlobalKey<ScaffoldState> _globalKey = new GlobalKey<ScaffoldState>();
+
+  var geoLocator = Geolocator();
+  Position currentPosition;
+  void setupPostionLocator() async {
+    Position position = await geoLocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+    currentPosition = position;
+    LatLng pos = LatLng(position.latitude, position.longitude);
+    CameraPosition cp = new CameraPosition(target: pos, zoom: 14);
+    mapController.animateCamera(CameraUpdate.newCameraPosition(cp));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +138,10 @@ class _MainPageState extends State<MainPage> {
           children: [
             GoogleMap(
               padding: EdgeInsets.only(bottom: mapBottomPadding),
-              initialCameraPosition: MainPage._kGooglePlex,
+              initialCameraPosition: _kGooglePlex,
+              myLocationEnabled: true,
+              zoomGesturesEnabled: true,
+              zoomControlsEnabled: true,
               mapType: MapType.normal,
               myLocationButtonEnabled: true,
               onMapCreated: (GoogleMapController controller) {
@@ -136,6 +150,8 @@ class _MainPageState extends State<MainPage> {
                 setState(() {
                   mapBottomPadding = 260;
                 });
+
+                setupPostionLocator();
               },
             ),
 

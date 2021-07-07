@@ -25,12 +25,103 @@ class _MainPageState extends State<MainPage> {
   Completer<GoogleMapController> _controller = Completer();
 
   GoogleMapController mapController;
+  GlobalKey<ScaffoldState> _globalKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Google Maps'),
+        key: _globalKey,
+        drawer: Container(
+          width: 250,
+          color: Colors.white,
+          child: Drawer(
+            child: ListView(
+              padding: EdgeInsets.all(0.0),
+              children: [
+                Container(
+                  height: 160,
+                  child: DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'images/user_icon.png',
+                          height: 60,
+                          width: 60,
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Trong Binh ',
+                              style: TextStyle(
+                                  fontFamily: 'Brand-Bold', fontSize: 20),
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text(
+                              'View Profile',
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                BranDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                ListTile(
+                  leading: Icon(
+                    OMIcons.cardGiftcard,
+                  ),
+                  title: Text(
+                    'Free Rides',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(OMIcons.creditCard),
+                  title: Text(
+                    'Payments',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    OMIcons.history,
+                  ),
+                  title: Text(
+                    'Ride History',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    OMIcons.contactSupport,
+                  ),
+                  title: Text(
+                    'Support',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    OMIcons.info,
+                  ),
+                  title: Text(
+                    'About',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         body: Stack(
           children: [
@@ -47,6 +138,40 @@ class _MainPageState extends State<MainPage> {
                 });
               },
             ),
+
+            // Menu Button
+            Positioned(
+              top: 50,
+              left: 25,
+              child: GestureDetector(
+                onTap: () {
+                  _globalKey.currentState.openDrawer();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black38,
+                        spreadRadius: 3.0,
+                        blurRadius: 3.0,
+                        offset: Offset(0.5, 0.5),
+                      )
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 20,
+                    child: Icon(
+                      OMIcons.menu,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Search Sheet
             Positioned(
               bottom: 0,
               left: 0,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uber_now/brand_colors.dart';
+import 'package:uber_now/dataprovider/appdata.dart';
 
 class SearchPage extends StatefulWidget {
   static const String routeName = '/search_page';
@@ -8,8 +10,32 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  var pickupController = TextEditingController();
+  var destinationController = TextEditingController();
+
+  FocusNode focusDestination;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    focusDestination = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    focusDestination.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    String address;
+    Provider.of<AppData>(context).pickupAdress != null
+        ? address = Provider.of<AppData>(context).pickupAdress.placeId
+        : address = '';
+    pickupController.text = address;
+
     return Scaffold(
       body: Column(
         children: [
@@ -68,13 +94,15 @@ class _SearchPageState extends State<SearchPage> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                              color: BrandColors.colorLightGray,
-                              borderRadius: BorderRadius.circular(5.0)),
+                            color: BrandColors.colorLightGray,
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
                           child: Padding(
                             padding: EdgeInsets.all(2.0),
                             child: TextField(
+                              controller: pickupController,
                               decoration: InputDecoration(
-                                hintText: 'Pick location',
+                                hintText: 'Pick Location',
                                 fillColor: BrandColors.colorLightGrayFair,
                                 filled: true,
                                 border: InputBorder.none,
@@ -112,6 +140,8 @@ class _SearchPageState extends State<SearchPage> {
                           child: Padding(
                             padding: EdgeInsets.all(2.0),
                             child: TextField(
+                              focusNode: focusDestination,
+                              controller: destinationController,
                               decoration: InputDecoration(
                                 hintText: 'Where to ?',
                                 fillColor: BrandColors.colorLightGrayFair,

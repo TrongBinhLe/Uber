@@ -279,28 +279,31 @@ class _MainPageState extends State<MainPage> {
                           SizedBox(
                             width: 10.0,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                (Provider.of<AppData>(context).pickupAdress !=
-                                        null)
-                                    ? Provider.of<AppData>(context)
-                                        .pickupAdress
-                                        .placeName
-                                    : 'Add Home',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                'Your residential address',
-                                style: TextStyle(
-                                    fontSize: 11,
-                                    color: BrandColors.colorDimText),
-                              ),
-                            ],
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  (Provider.of<AppData>(context).pickupAdress !=
+                                          null)
+                                      ? Provider.of<AppData>(context)
+                                          .pickupAdress
+                                          .placeName
+                                      : 'Add Home',
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(
+                                  'Your residential address',
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: BrandColors.colorDimText),
+                                ),
+                              ],
+                            ),
                           )
                         ],
                       ),

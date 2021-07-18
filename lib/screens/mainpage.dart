@@ -4,7 +4,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:uber_now/brand_colors.dart';
+import 'package:uber_now/dataprovider/appdata.dart';
+import 'package:uber_now/helpers/helpermethods.dart';
+import 'package:uber_now/screens/searchpage.dart';
 import 'package:uber_now/widgets/BrandDevider.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 
 class MainPage extends StatefulWidget {
@@ -17,6 +21,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   double searchSheetHeight = (Platform.isIOS) ? 270 : 250;
   double mapBottomPadding = 0;
+  String address;
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -36,6 +41,8 @@ class _MainPageState extends State<MainPage> {
     LatLng pos = LatLng(position.latitude, position.longitude);
     CameraPosition cp = new CameraPosition(target: pos, zoom: 14);
     mapController.animateCamera(CameraUpdate.newCameraPosition(cp));
+
+    address = await HelperMethods.findCordinateAddress(position, context);
   }
 
   @override
@@ -239,19 +246,24 @@ class _MainPageState extends State<MainPage> {
                                 offset: Offset(3.0, 4.0))
                           ],
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.search),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'Search Destination',
-                                style: TextStyle(fontSize: 15.0),
-                              )
-                            ],
+                        child: GestureDetector(
+                          onTap: () => {
+                            Navigator.pushNamed(context, SearchPage.routeName)
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: [
+                                Icon(Icons.search),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Search Destination',
+                                  style: TextStyle(fontSize: 15.0),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -271,7 +283,13 @@ class _MainPageState extends State<MainPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Add Home',
+                                (Provider.of<AppData>(context).pickupAdress !=
+                                        null)
+                                    ? Provider.of<AppData>(context)
+                                        .pickupAdress
+                                        .placeName
+                                    : 'Add Home',
+                                overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(
                                 height: 3,

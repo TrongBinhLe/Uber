@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_now/brand_colors.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
+import 'package:uber_now/globalvariable.dart';
+import 'package:uber_now/helpers/helpermethods.dart';
+import 'package:uber_now/helpers/requesthelper.dart';
 
 class SearchPage extends StatefulWidget {
   static const String routeName = '/search_page';
@@ -28,11 +31,26 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
+  void searchPlace(String placeName) async {
+    if (placeName.length > 1) {
+      String url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$keyMap&sessiontoken=1234567890';
+      var response = await RequestHelper.getRequest(url);
+
+      if (response == 'failed') {
+        return;
+      }
+      if (response['status'] == 'OVER_QUERY_LIMIT') {
+        print('display notify screen with message "Over-query-limit"');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String address;
     Provider.of<AppData>(context).pickupAdress != null
-        ? address = Provider.of<AppData>(context).pickupAdress.placeId
+        ? address = Provider.of<AppData>(context).pickupAdress.placeName
         : address = '';
     pickupController.text = address;
 
@@ -140,7 +158,11 @@ class _SearchPageState extends State<SearchPage> {
                           child: Padding(
                             padding: EdgeInsets.all(2.0),
                             child: TextField(
+                              autofocus: true,
                               focusNode: focusDestination,
+                              onChanged: (value) {
+                                searchPlace(value);
+                              },
                               controller: destinationController,
                               decoration: InputDecoration(
                                 hintText: 'Where to ?',

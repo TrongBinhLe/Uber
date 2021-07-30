@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_now/brand_colors.dart';
+import 'package:uber_now/datamodels/prediction.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
 import 'package:uber_now/globalvariable.dart';
 import 'package:uber_now/helpers/helpermethods.dart';
 import 'package:uber_now/helpers/requesthelper.dart';
+import 'package:uber_now/widgets/BrandDevider.dart';
+import 'package:uber_now/widgets/PredictionTitle.dart';
 
 class SearchPage extends StatefulWidget {
   static const String routeName = '/search_page';
@@ -31,6 +35,8 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
+  List<Prediction> destinationPredictionList = [];
+
   void searchPlace(String placeName) async {
     if (placeName.length > 1) {
       String url =
@@ -41,7 +47,18 @@ class _SearchPageState extends State<SearchPage> {
         return;
       }
       if (response['status'] == 'OVER_QUERY_LIMIT') {
-        print('display notify screen with message "Over-query-limit"');
+        print('display notify screen with message---Over-query-limit----');
+      } else if (response['status'] == 'OK') {
+        var predictionJson = response['predictions'];
+
+        var thisList = (predictionJson as List)
+            .map((e) => Prediction.fromJson(e))
+            .toList();
+
+        setState(() {
+          destinationPredictionList = thisList;
+        });
+        print(response);
       }
     }
   }
@@ -55,6 +72,7 @@ class _SearchPageState extends State<SearchPage> {
     pickupController.text = address;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Container(
@@ -186,6 +204,25 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
+          (destinationPredictionList.length > 0)
+              ? Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(0),
+                    itemBuilder: (context, index) {
+                      return PredicitonTitle(
+                        prediction: destinationPredictionList[index],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return BranDivider();
+                    },
+                    itemCount: destinationPredictionList.length,
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

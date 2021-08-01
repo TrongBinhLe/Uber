@@ -25,6 +25,7 @@ class PredicitonTitle extends StatelessWidget {
         'https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeID&key=$keyMap';
 
     var response = await RequestHelper.getRequest(url);
+    Navigator.pop(context);
     if (response == 'failed') {
       return;
     }

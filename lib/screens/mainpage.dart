@@ -414,5 +414,24 @@ class _MainPageState extends State<MainPage> {
 
       _polylines.add(polyline);
     });
+
+    // make polyline to fit  into the map
+    LatLngBounds bounds;
+
+    if (pickup.latitude > destination.latitude &&
+        pickup.longitude > destination.longitude) {
+      bounds = LatLngBounds(southwest: destLatLng, northeast: pickLatLng);
+    } else if (pickLatLng.longitude > destLatLng.longitude) {
+      bounds = LatLngBounds(
+          southwest: LatLng(pickup.latitude, destination.longitude),
+          northeast: LatLng(destination.latitude, pickup.longitude));
+    } else if (pickLatLng.latitude > destLatLng.latitude) {
+      bounds = LatLngBounds(
+          southwest: LatLng(destination.latitude, pickup.longitude),
+          northeast: LatLng(pickup.latitude, destination.longitude));
+    } else {
+      bounds = LatLngBounds(southwest: pickLatLng, northeast: destLatLng);
+    }
+    mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 70));
   }
 }

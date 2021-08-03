@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -10,6 +11,8 @@ import 'package:uber_now/screens/searchpage.dart';
 import 'package:uber_now/widgets/BrandDevider.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+
+import 'package:uber_now/widgets/progressDialog.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/mainpage';
@@ -32,8 +35,12 @@ class _MainPageState extends State<MainPage> {
   GoogleMapController mapController;
   GlobalKey<ScaffoldState> _globalKey = new GlobalKey<ScaffoldState>();
 
+  List<LatLng> polylineCoordinates = [];
+  Set<Polyline> _polylines = {};
+
   var geoLocator = Geolocator();
   Position currentPosition;
+
   void setupPostionLocator() async {
     Position position = await geoLocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
@@ -151,6 +158,7 @@ class _MainPageState extends State<MainPage> {
               zoomControlsEnabled: true,
               mapType: MapType.normal,
               myLocationButtonEnabled: true,
+              polylines: _polylines,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
                 mapController = controller;
@@ -247,8 +255,12 @@ class _MainPageState extends State<MainPage> {
                           ],
                         ),
                         child: GestureDetector(
-                          onTap: () => {
-                            Navigator.pushNamed(context, SearchPage.routeName)
+                          onTap: () async {
+                            var response = await Navigator.pushNamed(
+                                context, SearchPage.routeName);
+                            if (response == 'getDirection') {
+                              await getDirection();
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.all(5),
@@ -349,5 +361,58 @@ class _MainPageState extends State<MainPage> {
             )
           ],
         ));
+  }
+
+  Future<void> getDirection() async {
+    var pickup = Provider.of<AppData>(context, listen: false).pickupAdress;
+    var destination =
+        Provider.of<AppData>(context, listen: false).destinationAdress;
+
+    var pickLatLng = LatLng(pickup.latitude, pickup.longitude);
+    var destLatLng = LatLng(destination.latitude, destination.longitude);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => ProgressDialog(
+        status: 'Please wait...',
+      ),
+    );
+
+    var thisDetails =
+        await HelperMethods.getDirectionDetails(pickLatLng, destLatLng);
+    Navigator.pop(context);
+    print(thisDetails.encodePoints);
+
+    PolylinePoints polylinePoints = PolylinePoints();
+
+    List<PointLatLng> results =
+        polylinePoints.decodePolyline(thisDetails.encodePoints);
+
+    polylineCoordinates.clear();
+
+    if (results.isNotEmpty) {
+      //Loop through all PointLatLng points and convert them
+      //to a List of LatLng, required by the Polyline.
+
+      results.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    _polylines.clear();
+    setState(() {
+      Polyline polyline = Polyline(
+        polylineId: PolylineId('polyid'),
+        color: Color.fromARGB(255, 95, 109, 237),
+        points: polylineCoordinates,
+        jointType: JointType.round,
+        width: 4,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        geodesic: true,
+      );
+
+      _polylines.add(polyline);
+    });
   }
 }

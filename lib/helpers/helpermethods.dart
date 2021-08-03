@@ -40,7 +40,8 @@ class HelperMethods {
     return placeAddress;
   }
 
-  static Future<DirectionDetails> getDirectionDetails(LatLng startPosition, LatLng endPosition) async {
+  static Future<DirectionDetails> getDirectionDetails(
+      LatLng startPosition, LatLng endPosition) async {
     String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=${startPosition.latitude},${startPosition.longitude}&destination=${endPosition.latitude},${endPosition.longitude}&mode=driving&key=$keyMap';
 
@@ -50,18 +51,18 @@ class HelperMethods {
     }
     DirectionDetails directionDetails = DirectionDetails();
 
-    directionDetails.durationText = 
+    directionDetails.durationText =
         response['routes'][0]['legs'][0]['duration']['text'];
     directionDetails.durationValue =
         response['routes'][0]['legs'][0]['duration']['value'];
 
-    directionDetails.distanceText = 
+    directionDetails.distanceText =
         response['routes'][0]['legs'][0]['duration']['text'];
     directionDetails.distanceValue =
         response['routes'][0]['legs'][0]['duration']['value'];
-        directionDetails.encodePoints = response['routes'][0]['overview_polyline']['points']
+    directionDetails.encodePoints =
+        response['routes'][0]['overview_polyline']['points'];
 
-  return directionDetails;
-
+    return directionDetails;
   }
 }

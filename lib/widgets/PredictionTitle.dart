@@ -37,7 +37,10 @@ class PredicitonTitle extends StatelessWidget {
 
       Provider.of<AppData>(context, listen: false)
           .updateDestinationAdress(thisPlace);
+
       print(thisPlace.placeName);
+
+      Navigator.pop(context, 'getDirection');
     }
   }
 

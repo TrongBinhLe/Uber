@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -10,6 +11,7 @@ import 'package:uber_now/helpers/helpermethods.dart';
 import 'package:uber_now/screens/searchpage.dart';
 import 'package:uber_now/widgets/BrandDevider.dart';
 import 'package:provider/provider.dart';
+import '../widgets/taxibutton.dart';
 import 'dart:io';
 
 import 'package:uber_now/widgets/progressDialog.dart';
@@ -37,6 +39,8 @@ class _MainPageState extends State<MainPage> {
 
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> _polylines = {};
+  Set<Marker> _Markers = {};
+  Set<Circle> _Circles = {};
 
   var geoLocator = Geolocator();
   Position currentPosition;
@@ -150,6 +154,7 @@ class _MainPageState extends State<MainPage> {
         ),
         body: Stack(
           children: [
+            //Google Map
             GoogleMap(
               padding: EdgeInsets.only(bottom: mapBottomPadding),
               initialCameraPosition: _kGooglePlex,
@@ -159,6 +164,8 @@ class _MainPageState extends State<MainPage> {
               mapType: MapType.normal,
               myLocationButtonEnabled: true,
               polylines: _polylines,
+              markers: _Markers,
+              circles: _Circles,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
                 mapController = controller;
@@ -169,7 +176,6 @@ class _MainPageState extends State<MainPage> {
                 setupPostionLocator();
               },
             ),
-
             // Menu Button
             Positioned(
               top: 50,
@@ -358,7 +364,113 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
               ),
-            )
+            ),
+            // RideDetails Sheet
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 15.0, // soften the shadow
+                      spreadRadius: 0.5, //extend the shadow
+                      offset: Offset(0.7, 0.7),
+                    ),
+                  ],
+                ),
+                height: 260,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 18),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        color: BrandColors.colorAccent1,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'images/taxi.png',
+                                height: 70,
+                                width: 70,
+                              ),
+                              SizedBox(
+                                width: 16,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Taxi',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'Brand-Bold',
+                                    ),
+                                  ),
+                                  Text(
+                                    '14km',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: BrandColors.colorTextLight),
+                                  ),
+                                ],
+                              ),
+                              Expanded(child: Container()),
+                              Text(
+                                '\$13',
+                                style: TextStyle(
+                                    fontSize: 18, fontFamily: 'Brand-Bold'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 22,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Icon(FontAwesomeIcons.moneyBillAlt,
+                                size: 18, color: BrandColors.colorTextLight),
+                            SizedBox(
+                              width: 18,
+                            ),
+                            Text('Cash'),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 16,
+                              color: BrandColors.colorTextLight,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: TaxiButton(
+                          title: 'REQUEST CAR',
+                          color: BrandColors.colorGreen,
+                          onPress: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ));
   }
@@ -433,5 +545,44 @@ class _MainPageState extends State<MainPage> {
       bounds = LatLngBounds(southwest: pickLatLng, northeast: destLatLng);
     }
     mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 70));
+
+    Marker pickupMarker = Marker(
+      markerId: MarkerId('pickup'),
+      position: pickLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      infoWindow: InfoWindow(title: pickup.placeName, snippet: 'My Location'),
+    );
+    Marker destinationMarker = Marker(
+      markerId: MarkerId('destination'),
+      position: destLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      infoWindow: InfoWindow(title: pickup.placeName, snippet: 'Destination'),
+    );
+
+    setState(() {
+      _Markers.add(pickupMarker);
+      _Markers.add(destinationMarker);
+    });
+
+    Circle pickupCircle = Circle(
+      circleId: CircleId('pickup'),
+      strokeColor: Colors.green,
+      strokeWidth: 3,
+      radius: 12,
+      center: pickLatLng,
+      fillColor: BrandColors.colorGreen,
+    );
+    Circle destinationCircle = Circle(
+      circleId: CircleId('destination'),
+      strokeColor: BrandColors.colorAccent,
+      strokeWidth: 3,
+      radius: 12,
+      center: destLatLng,
+      fillColor: BrandColors.colorAccentPurple,
+    );
+    setState(() {
+      _Circles.add(pickupCircle);
+      _Circles.add(destinationCircle);
+    });
   }
 }

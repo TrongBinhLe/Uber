@@ -5,7 +5,8 @@ class TaxiButton extends StatelessWidget {
   final Color color;
   final Function onPress;
 
-  TaxiButton({this.title, this.color, this.onPress});
+  TaxiButton(
+      {@required this.title, @required this.color, @required this.onPress});
   @override
   Widget build(BuildContext context) {
     return RaisedButton(

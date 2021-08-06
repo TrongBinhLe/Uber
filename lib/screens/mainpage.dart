@@ -8,6 +8,7 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:uber_now/brand_colors.dart';
 import 'package:uber_now/datamodels/directiondetails.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
+import 'package:uber_now/globalvariable.dart';
 import 'package:uber_now/helpers/helpermethods.dart';
 import 'package:uber_now/screens/searchpage.dart';
 import 'package:uber_now/widgets/BrandDevider.dart';
@@ -30,11 +31,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   double rideDetailsSheetHeight = 0; // (Platform.isIOS) ? 270 : 250;
   String address;
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
   GlobalKey<ScaffoldState> _globalKey = new GlobalKey<ScaffoldState>();
@@ -48,6 +44,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Position currentPosition;
 
   DirectionDetails tripDirectionDetails;
+
+  bool drawerCanOpen = true;
 
   void setupPostionLocator() async {
     Position position = await geoLocator.getCurrentPosition(
@@ -65,7 +63,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     setState(() {
       searchSheetHeight = 0;
       rideDetailsSheetHeight = (Platform.isAndroid) ? 235 : 260;
+
       mapBottomPadding = (Platform.isAndroid) ? 240 : 230;
+      drawerCanOpen = false;
     });
   }
 
@@ -170,7 +170,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             //Google Map
             GoogleMap(
               padding: EdgeInsets.only(bottom: mapBottomPadding),
-              initialCameraPosition: _kGooglePlex,
+              initialCameraPosition: googlePlex,
               myLocationEnabled: true,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
@@ -195,7 +195,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               left: 25,
               child: GestureDetector(
                 onTap: () {
-                  _globalKey.currentState.openDrawer();
+                  if (drawerCanOpen) {
+                    _globalKey.currentState.openDrawer();
+                  } else {
+                    resetApp();
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -214,7 +218,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     backgroundColor: Colors.white,
                     radius: 20,
                     child: Icon(
-                      OMIcons.menu,
+                      (drawerCanOpen) ? OMIcons.menu : Icons.arrow_back,
                       color: Colors.black87,
                     ),
                   ),
@@ -616,5 +620,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _Circles.add(pickupCircle);
       _Circles.add(destinationCircle);
     });
+  }
+
+  resetApp() {
+    setState(() {
+      polylineCoordinates.clear();
+      _polylines.clear();
+      _Markers.clear();
+      _Circles.clear();
+      rideDetailsSheetHeight = 0;
+      searchSheetHeight = (Platform.isAndroid) ? 275 : 300;
+      mapBottomPadding = (Platform.isAndroid) ? 280 : 270;
+      drawerCanOpen = true;
+    });
+    setupPostionLocator();
   }
 }

@@ -65,4 +65,16 @@ class HelperMethods {
 
     return directionDetails;
   }
+
+  static void estimateFares(DirectionDetails details) {
+    // per km : 0.3$
+    // per minute : 0.2$
+    // pase fare :$3
+
+    double baseFare = 3;
+    double distanceFare = (details.distanceValue / 1000) * 0.3;
+    double timeFare = (details.durationValue / 60) * 0.2;
+
+    double totalFare = baseFare + distanceFare + timeFare;
+  }
 }

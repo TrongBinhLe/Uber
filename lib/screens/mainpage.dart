@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:uber_now/brand_colors.dart';
+import 'package:uber_now/datamodels/directiondetails.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
 import 'package:uber_now/helpers/helpermethods.dart';
 import 'package:uber_now/screens/searchpage.dart';
@@ -45,6 +46,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   var geoLocator = Geolocator();
   Position currentPosition;
+
+  DirectionDetails tripDirectionDetails;
 
   void setupPostionLocator() async {
     Position position = await geoLocator.getCurrentPosition(
@@ -439,7 +442,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     Text(
-                                      '14km',
+                                      (tripDirectionDetails != null)
+                                          ? tripDirectionDetails.distanceText
+                                          : '',
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: BrandColors.colorTextLight),
@@ -448,7 +453,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                                 ),
                                 Expanded(child: Container()),
                                 Text(
-                                  '\$13',
+                                  (tripDirectionDetails != null)
+                                      ? '\$${HelperMethods.estimateFares(tripDirectionDetails)}'
+                                      : '',
                                   style: TextStyle(
                                       fontSize: 18, fontFamily: 'Brand-Bold'),
                                 ),
@@ -516,6 +523,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     var thisDetails =
         await HelperMethods.getDirectionDetails(pickLatLng, destLatLng);
     Navigator.pop(context);
+
+    tripDirectionDetails = thisDetails;
     print(thisDetails.encodePoints);
 
     PolylinePoints polylinePoints = PolylinePoints();

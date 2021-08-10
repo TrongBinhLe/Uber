@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -49,6 +50,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   bool drawerCanOpen = true;
 
+  DatabaseReference rideRef;
+
   void setupPostionLocator() async {
     Position position = await geoLocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
@@ -76,9 +79,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       rideDetailsSheetHeight = 0;
       requestingSheetHeight = (Platform.isAndroid) ? 195 : 220;
       mapBottomPadding = (Platform.isAndroid) ? 200 : 190;
-
       drawerCanOpen = true;
     });
+
+    createRideRequest();
   }
 
   @override
@@ -717,6 +721,37 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _Circles.add(pickupCircle);
       _Circles.add(destinationCircle);
     });
+  }
+
+  void createRideRequest() {
+    rideRef = FirebaseDatabase.instance.reference().child('rideRequest').push();
+
+    var pickup = Provider.of<AppData>(context, listen: false).pickupAdress;
+    var destination =
+        Provider.of<AppData>(context, listen: false).destinationAdress;
+
+    Map pickupMap = {
+      'latitude': pickup.latitude.toString(),
+      'longitude': pickup.longitude.toString(),
+    };
+
+    Map destinationMap = {
+      'latitude': destination.latitude.toString(),
+      'longitude': destination.longitude.toString(),
+    };
+    Map rideMap = {
+      'created_at': DateTime.now().toString(),
+      'rider_name': currentUserInfo.fullName,
+      'rider_phone': currentUserInfo.phone,
+      'pickup_address': pickup.placeName,
+      'destination_address': destination.placeName,
+      'location': pickupMap,
+      'destination': destinationMap,
+      'payment_method': 'card',
+      'drive_id': 'waittimg',
+    };
+
+    rideRef.set(rideMap);
   }
 
   resetApp() {

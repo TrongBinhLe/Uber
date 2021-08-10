@@ -1,14 +1,32 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_now/datamodels/address.dart';
 import 'package:uber_now/datamodels/directiondetails.dart';
+import 'package:uber_now/datamodels/user.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
 import 'package:uber_now/globalvariable.dart';
 import 'package:uber_now/helpers/requesthelper.dart';
 import 'package:provider/provider.dart';
 
 class HelperMethods {
+  static void getCurrentUserInfo() async {
+    currentFirebaseUser = await FirebaseAuth.instance.currentUser();
+    String uid = currentFirebaseUser.uid;
+
+    DatabaseReference userRef =
+        FirebaseDatabase.instance.reference().child('users/$uid');
+
+    userRef.once().then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        currentUserInfo = User.fromSnapShot(snapshot);
+        print('my name is ${currentUserInfo.fullName}');
+      }
+    });
+  }
+
   static Future<String> findCordinateAddress(Position position, context) async {
     String placeAddress = '';
 
@@ -66,7 +84,7 @@ class HelperMethods {
     return directionDetails;
   }
 
-  static void estimateFares(DirectionDetails details) {
+  static int estimateFares(DirectionDetails details) {
     // per km : 0.3$
     // per minute : 0.2$
     // pase fare :$3
@@ -76,5 +94,7 @@ class HelperMethods {
     double timeFare = (details.durationValue / 60) * 0.2;
 
     double totalFare = baseFare + distanceFare + timeFare;
+
+    return totalFare.truncate();
   }
 }

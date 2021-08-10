@@ -82,6 +82,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    HelperMethods.getCurrentUserInfo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _globalKey,

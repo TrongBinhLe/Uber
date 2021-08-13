@@ -527,7 +527,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
             ),
           ),
-
+          // Request Sheet
           Positioned(
             left: 0,
             right: 0,
@@ -573,18 +573,24 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     SizedBox(
                       height: 20,
                     ),
-                    Container(
-                      height: 50,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                            width: 1.0, color: BrandColors.colorLightGray),
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        size: 25,
+                    GestureDetector(
+                      onTap: () {
+                        cancelRequest();
+                        resetApp();
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                              width: 1.0, color: BrandColors.colorLightGray),
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 25,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -721,6 +727,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _Circles.add(pickupCircle);
       _Circles.add(destinationCircle);
     });
+  }
+
+  void cancelRequest() {
+    rideRef.remove();
   }
 
   void createRideRequest() {

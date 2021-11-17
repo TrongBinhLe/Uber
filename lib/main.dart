@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter App',
         theme: ThemeData(
             fontFamily: 'Brand-Regular', primaryColor: Colors.deepPurpleAccent),
-        initialRoute: MainPage.routeName,
+        initialRoute: Loginpage.routeName,
         routes: {
           SearchPage.routeName: (context) => SearchPage(),
           MainPage.routeName: (context) => MainPage(),

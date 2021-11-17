@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_now/brand_colors.dart';
 import 'package:uber_now/datamodels/prediction.dart';
 import 'package:uber_now/dataprovider/appdata.dart';
 import 'package:uber_now/globalvariable.dart';
-import 'package:uber_now/helpers/helpermethods.dart';
 import 'package:uber_now/helpers/requesthelper.dart';
 import 'package:uber_now/widgets/BrandDevider.dart';
 import 'package:uber_now/widgets/PredictionTitle.dart';
@@ -72,6 +70,7 @@ class _SearchPageState extends State<SearchPage> {
     pickupController.text = address;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -90,8 +89,11 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
               child: Padding(
-                padding:
-                    EdgeInsets.only(left: 20, top: 40, right: 20, bottom: 40),
+                padding: EdgeInsets.only(
+                  left: 20,
+                  top: 40,
+                  right: 20,
+                ),
                 child: Column(
                   children: [
                     SizedBox(

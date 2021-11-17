@@ -548,7 +548,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              height: 250,
+              height: requestingSheetHeight,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
                 child: Column(
@@ -730,6 +730,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   void cancelRequest() {
+    if (rideRef == null) return;
     rideRef.remove();
   }
 
@@ -771,6 +772,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _Markers.clear();
       _Circles.clear();
       rideDetailsSheetHeight = 0;
+      requestingSheetHeight = 0;
       searchSheetHeight = (Platform.isAndroid) ? 275 : 300;
       mapBottomPadding = (Platform.isAndroid) ? 280 : 270;
       drawerCanOpen = true;
